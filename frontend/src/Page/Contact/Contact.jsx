@@ -1,7 +1,47 @@
-import React from 'react';
+import React, { useState } from "react";
+import axios from "axios";
 import './Contact.scss';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+    status: "in progress",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    try {
+      const response =await axios.post(
+              "http://localhost:3000/api/contact",
+              formData
+      )
+
+      if(response.status===201){
+        alert("문의가 성공적 접수!11")
+        setFormData({
+          name:"",
+          email:"",
+          phone:"",
+          message:"",
+          status:"in progress"
+        })
+      }
+    } catch (error) {
+        console.log("에러 발생: ", error);
+      alert("문의 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+    }
+  };
   return (
     <div className="contact">
       <div className="contact-inner">
@@ -16,22 +56,45 @@ const Contact = () => {
         <div className="contact-body">
           {/* 문의 폼 */}
           <div className="contact-form-wrapper">
-            <form className="contact-form">
+            <form className="contact-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>이름</label>
-                <input type="text" placeholder="홍길동" required />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="홍길동"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required />
               </div>
               <div className="form-group">
                 <label>이메일</label>
-                <input type="email" placeholder="example@email.com" required />
+                <input
+                  value={formData.email}
+                  name="email"
+                  onChange={handleChange}
+                  type="email"
+                  placeholder="example@email.com"
+                  required />
               </div>
               <div className="form-group">
-                <label>연락처</label>
-                <input type="tel" placeholder="010-1234-5678" required />
+                <label>전화번호</label>
+                <input
+                  value={formData.phone}
+                  onChange={handleChange}
+                  name="phone"
+                  type="tel"
+                  placeholder="010-1234-5678"
+                  required />
               </div>
               <div className="form-group">
                 <label>문의 내용</label>
-                <textarea placeholder="문의하실 내용을 자세히 적어주세요." required />
+                <textarea
+                  onChange={handleChange}
+                  name="message"
+                  value={formData.message}
+                  placeholder="문의하실 내용을 자세히 적어주세요."
+                  required />
               </div>
               <button type="submit">문의하기</button>
             </form>
